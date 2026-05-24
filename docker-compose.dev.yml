@@ -1,5 +1,3 @@
-version: "3.9"
-
 # ═══════════════════════════════════════════════════════════════════════════════
 #  PepperImports — Docker Compose DEV
 #  Volumes no disco D: para dados persistentes

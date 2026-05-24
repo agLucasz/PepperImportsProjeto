@@ -1,48 +1,59 @@
-#!/usr/bin/env pwsh
-# ═══════════════════════════════════════════════════════════════════════════════
-#  PepperImports — Monitoramento de Containers
-# ═══════════════════════════════════════════════════════════════════════════════
+<#
+.SYNOPSIS
+    PepperImports - Monitoramento de Containers
+.PARAMETER Watch
+    Atualizar continuamente a cada 5s
+.PARAMETER Logs
+    Mostrar logs ao inves de status
+#>
 param(
-  [switch]$Watch,  # Atualizar a cada 5s
-  [switch]$Logs    # Mostrar logs ao invés de status
+    [switch]$Watch,
+    [switch]$Logs
 )
 
 function Show-Status {
-  Clear-Host
-  Write-Host "═══════════════════════════════════════════════════" -ForegroundColor DarkCyan
-  Write-Host "  PepperImports — Status dos Containers  $(Get-Date -Format 'HH:mm:ss')" -ForegroundColor Cyan
-  Write-Host "═══════════════════════════════════════════════════" -ForegroundColor DarkCyan
+    Clear-Host
+    $ts = Get-Date -Format "HH:mm:ss"
+    Write-Host "=== PepperImports - Status dos Containers [$ts] ===" -ForegroundColor Cyan
 
-  $containers = docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" 2>&1
-  Write-Host $containers
+    Write-Host ""
+    Write-Host "--- Containers ---" -ForegroundColor DarkGray
+    docker ps --format "table {{.Names}}`t{{.Status}}`t{{.Ports}}" 2>&1
 
-  Write-Host ""
-  Write-Host "── Uso de Recursos ─────────────────────────────────" -ForegroundColor DarkGray
-  docker stats --no-stream --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.NetIO}}" 2>&1
+    Write-Host ""
+    Write-Host "--- Uso de Recursos ---" -ForegroundColor DarkGray
+    docker stats --no-stream --format "table {{.Name}}`t{{.CPUPerc}}`t{{.MemUsage}}`t{{.NetIO}}" 2>&1
 
-  Write-Host ""
-  Write-Host "── Volumes no D: ───────────────────────────────────" -ForegroundColor DarkGray
-  if (Test-Path "D:\docker-data\postgres") {
-    $sz = (Get-ChildItem "D:\docker-data\postgres" -Recurse -ErrorAction SilentlyContinue | Measure-Object Length -Sum).Sum / 1MB
-    Write-Host "  PostgreSQL: $([math]::Round($sz, 1)) MB" -ForegroundColor Gray
-  }
+    Write-Host ""
+    Write-Host "--- Volumes em D:\docker-data ---" -ForegroundColor DarkGray
+    $paths = @("postgres", "uploads", "logs")
+    foreach ($p in $paths) {
+        $full = "D:\docker-data\$p"
+        if (Test-Path $full) {
+            $sz = (Get-ChildItem $full -Recurse -ErrorAction SilentlyContinue | Measure-Object Length -Sum).Sum
+            $mb = [math]::Round($sz / 1MB, 1)
+            Write-Host "  $p : $mb MB" -ForegroundColor Gray
+        }
+    }
 }
 
 if ($Logs) {
-  $compose = if (Test-Path "docker-compose.prod.yml" -and (docker ps -q -f name=prod)) {
-    "docker-compose.prod.yml"
-  } else { "docker-compose.dev.yml" }
-  docker compose -f $compose logs -f --tail=100
-  exit 0
+    $isRunningProd = docker ps --format "{{.Names}}" | Where-Object { $_ -match "prod" }
+    if ($isRunningProd) {
+        docker compose -f docker-compose.prod.yml logs -f --tail=100
+    } else {
+        docker compose -f docker-compose.dev.yml logs -f --tail=100
+    }
+    exit 0
 }
 
 if ($Watch) {
-  while ($true) {
-    Show-Status
-    Write-Host ""
-    Write-Host "  Atualizando em 5s... (Ctrl+C para sair)" -ForegroundColor DarkGray
-    Start-Sleep -Seconds 5
-  }
+    while ($true) {
+        Show-Status
+        Write-Host ""
+        Write-Host "  Atualizando em 5s... (Ctrl+C para sair)" -ForegroundColor DarkGray
+        Start-Sleep -Seconds 5
+    }
 } else {
-  Show-Status
+    Show-Status
 }

@@ -1,49 +1,50 @@
-#!/usr/bin/env pwsh
-# ═══════════════════════════════════════════════════════════════════════════════
-#  PepperImports — Limpeza segura do Docker
-#  NÃO remove volumes com dados (postgres, uploads)
-# ═══════════════════════════════════════════════════════════════════════════════
+<#
+.SYNOPSIS
+    PepperImports - Limpeza segura do Docker
+    NAO remove volumes com dados (postgres, uploads)
+.PARAMETER Full
+    Limpeza completa (inclui imagens nao usadas)
+.PARAMETER DryRun
+    Apenas mostra o que seria removido
+#>
 param(
-  [switch]$Full,      # Limpeza completa (inclui imagens não usadas)
-  [switch]$DryRun     # Apenas mostra o que seria removido
+    [switch]$Full,
+    [switch]$DryRun
 )
 
 $Root = Split-Path $PSScriptRoot -Parent
 Set-Location $Root
 
-Write-Host "🧹 Limpeza do Docker (dados persistentes PRESERVADOS)..." -ForegroundColor Cyan
+Write-Host "[CLEAN] Limpeza Docker (dados persistentes PRESERVADOS)" -ForegroundColor Cyan
 
 if ($DryRun) {
-  Write-Host "── DRY RUN: Apenas simulando ────────────────────────" -ForegroundColor Yellow
+    Write-Host "[DRY-RUN] Apenas simulando, nada sera removido." -ForegroundColor Yellow
 }
 
-# Parar e remover containers do projeto
-Write-Host "`n📦 Parando containers..."
+Write-Host ""
+Write-Host "[1/4] Parando containers do projeto..." -ForegroundColor Gray
 if (-not $DryRun) {
-  docker compose -f docker-compose.dev.yml down 2>&1 | Out-Null
-  docker compose -f docker-compose.prod.yml down 2>&1 | Out-Null
+    docker compose -f docker-compose.dev.yml down  2>&1 | Out-Null
+    docker compose -f docker-compose.prod.yml down 2>&1 | Out-Null
 }
 
-# Limpar containers parados
-Write-Host "🗑️  Removendo containers parados..."
+Write-Host "[2/4] Removendo containers parados..." -ForegroundColor Gray
 if (-not $DryRun) { docker container prune -f }
 
-# Limpar networks não usadas
-Write-Host "🌐 Removendo networks não usadas..."
+Write-Host "[3/4] Removendo networks nao usadas..." -ForegroundColor Gray
 if (-not $DryRun) { docker network prune -f }
 
-# Limpar build cache
-Write-Host "🏗️  Limpando build cache..."
+Write-Host "[4/4] Limpando build cache..." -ForegroundColor Gray
 if (-not $DryRun) { docker builder prune -f }
 
 if ($Full) {
-  Write-Host "🖼️  Removendo imagens não usadas..."
-  if (-not $DryRun) { docker image prune -a -f }
+    Write-Host "[FULL] Removendo imagens nao usadas..." -ForegroundColor Yellow
+    if (-not $DryRun) { docker image prune -a -f }
 }
 
 Write-Host ""
-Write-Host "✅ Limpeza concluída!" -ForegroundColor Green
-Write-Host "   ⚠️  Dados em D:\docker-data\ preservados" -ForegroundColor Yellow
+Write-Host "[OK] Limpeza concluida!" -ForegroundColor Green
+Write-Host "  AVISO: Dados em D:\docker-data\ foram preservados." -ForegroundColor Yellow
 Write-Host ""
-Write-Host "Espaço Docker atual:"
+Write-Host "Espaco Docker atual:"
 docker system df
