@@ -1,0 +1,99 @@
+version: "3.9"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  PepperImports — Docker Compose DEV
+#  Volumes no disco D: para dados persistentes
+#  Hot reload habilitado para frontend e backend
+# ═══════════════════════════════════════════════════════════════════════════════
+
+networks:
+  pepper_dev_network:
+    driver: bridge
+
+volumes:
+  postgres_dev_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: D:/docker-data/postgres
+
+services:
+
+  # ── PostgreSQL ───────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: pepper_postgres_dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-PepperImports}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      TZ: America/Sao_Paulo
+      PGTZ: America/Sao_Paulo
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - pepper_dev_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-PepperImports}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # ── Backend .NET ─────────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: docker/dev/Dockerfile.backend
+    container_name: pepper_backend_dev
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: >-
+        Host=postgres;Port=5432;Database=${POSTGRES_DB:-PepperImports};
+        Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-changeme}
+      Jwt__Key: ${JWT_SECRET:-dev-jwt-secret-key-min-32-chars!!}
+      Jwt__Issuer: PepperImportsAPI
+      Jwt__Audience: PepperImportsAPI
+      ASPNETCORE_URLS: http://0.0.0.0:5139
+    volumes:
+      # Hot reload — monta código fonte
+      - ./backend/PepperImportsAPI:/app/PepperImportsAPI
+      - D:/docker-data/uploads:/app/PepperImportsAPI/wwwroot/uploads
+      - D:/docker-data/logs/backend:/app/logs
+      # Evita que node_modules/bin/obj sobrescreva o do container
+      - /app/PepperImportsAPI/bin
+      - /app/PepperImportsAPI/obj
+    ports:
+      - "5139:5139"
+    networks:
+      - pepper_dev_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # ── Frontend React (Vite) ───────────────────────────────────────────────────
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/dev/Dockerfile.frontend
+    container_name: pepper_frontend_dev
+    restart: unless-stopped
+    environment:
+      VITE_API_URL: http://localhost:5139
+    volumes:
+      # Hot reload — monta código fonte
+      - ./frontend:/app
+      # Evita sobrescrever node_modules do container
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    networks:
+      - pepper_dev_network
+    depends_on:
+      - backend

@@ -1,0 +1,121 @@
+version: "3.9"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  PepperImports — Docker Compose PRODUÇÃO
+#  Volumes no disco D: para dados persistentes
+#  Build otimizado, sem exposição desnecessária de portas
+#  Nginx como proxy reverso único ponto de entrada
+# ═══════════════════════════════════════════════════════════════════════════════
+
+networks:
+  pepper_prod_network:
+    driver: bridge
+    internal: false   # nginx precisa de acesso externo
+
+  pepper_internal_network:
+    driver: bridge
+    internal: true    # backend e postgres: apenas comunicação interna
+
+volumes:
+  postgres_prod_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: D:/docker-data/postgres
+
+services:
+
+  # ── PostgreSQL ───────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: pepper_postgres_prod
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-PepperImports}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}   # OBRIGATÓRIO em produção
+      TZ: America/Sao_Paulo
+      PGTZ: America/Sao_Paulo
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - D:/docker-data/logs/postgres:/var/log/postgresql
+    # SEM expose de porta em produção — apenas rede interna
+    networks:
+      - pepper_internal_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-PepperImports}"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+
+  # ── Backend .NET ─────────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: docker/prod/Dockerfile.backend
+    image: pepperimports/backend:prod
+    container_name: pepper_backend_prod
+    restart: always
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: >-
+        Host=postgres;Port=5432;Database=${POSTGRES_DB:-PepperImports};
+        Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD}
+      Jwt__Key: ${JWT_SECRET}   # OBRIGATÓRIO em produção
+      Jwt__Issuer: PepperImportsAPI
+      Jwt__Audience: PepperImportsAPI
+      ASPNETCORE_URLS: http://0.0.0.0:5139
+    volumes:
+      - D:/docker-data/uploads:/app/wwwroot/uploads
+      - D:/docker-data/logs/backend:/app/logs
+    # SEM expose público — apenas nginx acessa via rede interna
+    networks:
+      - pepper_internal_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5139/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ── Frontend + Nginx ──────────────────────────────────────────────────────────
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/prod/Dockerfile.frontend
+      args:
+        VITE_API_URL: ${VITE_API_URL:-https://seudominio.com}
+    image: pepperimports/frontend:prod
+    container_name: pepper_nginx_prod
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - D:/docker-data/logs/nginx:/var/log/nginx
+      # Para HTTPS: monta certificados Let's Encrypt
+      # - D:/docker-data/certbot/conf:/etc/letsencrypt:ro
+      # - D:/docker-data/certbot/www:/var/www/certbot:ro
+    networks:
+      - pepper_prod_network
+      - pepper_internal_network
+    depends_on:
+      backend:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

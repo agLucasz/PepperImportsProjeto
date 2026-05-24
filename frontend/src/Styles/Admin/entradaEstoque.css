@@ -1,0 +1,88 @@
+/* ============= ENTRADA ESTOQUE PAGE ============= */
+
+/* ---- Modal eyebrow ---- */
+.modal-eyebrow {
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+/* ---- Summary stats ---- */
+.estoque-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.estoque-stat-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.estoque-stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(225, 20, 10, .1);
+  display: grid;
+  place-items: center;
+  color: var(--red);
+  flex-shrink: 0;
+}
+
+.estoque-stat-label {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  color: var(--fg-mute);
+  margin-bottom: 4px;
+  letter-spacing: .01em;
+}
+
+.estoque-stat-value {
+  font-family: 'Anton', sans-serif;
+  font-size: 32px;
+  letter-spacing: .02em;
+  color: var(--fg);
+  line-height: 1;
+}
+
+/* ---- Produto cell ---- */
+.estoque-produto-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--fg);
+  font-weight: 500;
+}
+
+.estoque-produto-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--red);
+  flex-shrink: 0;
+}
+
+/* ---- Qty badge ---- */
+.estoque-qty-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: 'Anton', sans-serif;
+  font-size: 16px;
+  letter-spacing: .02em;
+  color: var(--green);
+  background: rgba(34, 197, 94, .1);
+  padding: 4px 12px;
+  border-radius: 8px;
+}

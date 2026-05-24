@@ -1,0 +1,249 @@
+/* ============= CAROUSEL ============= */
+.carousel {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 560px;
+  max-height: 700px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+/* Background image */
+.carousel-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center ;
+  background-repeat: no-repeat;
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity .6s ease;
+}
+
+/* Dark gradient overlay */
+.carousel-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to right, rgba(10,10,10,.95) 0%, rgba(10,10,10,.65) 50%, rgba(10,10,10,.2) 100%),
+    linear-gradient(to top, rgba(10,10,10,.7) 0%, transparent 40%);
+}
+
+/* Content */
+.carousel-content {
+  position: relative;
+  z-index: 2;
+  padding: 0 40px;
+  max-width: 660px;
+  padding-top: 68px; /* header height offset */
+}
+
+@media (min-width: 1440px) {
+  .carousel-content {
+    margin-left: calc((100% - 1440px) / 2 + 40px);
+  }
+}
+
+.carousel-eyebrow {
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.carousel-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 24px;
+  height: 2px;
+  background: var(--red);
+  border-radius: 2px;
+}
+
+.carousel-title {
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(64px, 8vw, 110px);
+  font-weight: 400;
+  letter-spacing: .005em;
+  line-height: .92;
+  text-transform: uppercase;
+  color: var(--fg);
+  margin-bottom: 24px;
+}
+
+.carousel-title .red {
+  color: var(--red);
+}
+
+.carousel-subtitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--fg-mute);
+  max-width: 420px;
+  margin-bottom: 36px;
+}
+
+/* CTA Button */
+.carousel-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 28px;
+  background: var(--red);
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background .15s, transform .1s, gap .15s;
+}
+
+.carousel-cta:hover {
+  background: var(--red-hot);
+  gap: 18px;
+}
+
+.carousel-cta:active {
+  transform: scale(.97);
+}
+
+/* Arrow icon — CSS only */
+.carousel-cta-arrow {
+  display: inline-block;
+  width: 14px;
+  height: 10px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.carousel-cta-arrow::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 12px;
+  height: 1.5px;
+  background: #fff;
+  transform: translateY(-50%);
+  border-radius: 1px;
+}
+
+.carousel-cta-arrow::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 7px;
+  height: 7px;
+  border-top: 1.5px solid #fff;
+  border-right: 1.5px solid #fff;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+/* ---- Navigation Arrows ---- */
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  width: 48px;
+  height: 48px;
+  background: rgba(10, 10, 10, .6);
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+  margin-top: 34px; /* compensate header */
+}
+
+.carousel-arrow:hover {
+  background: rgba(255, 255, 255, .12);
+  border-color: rgba(255, 255, 255, .25);
+}
+
+.carousel-arrow.prev {
+  left: 24px;
+}
+
+.carousel-arrow.next {
+  right: 24px;
+}
+
+/* Chevron icons via CSS */
+.carousel-arrow::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid var(--fg-2);
+  border-right: 2px solid var(--fg-2);
+  transform: translate(-30%, -50%) rotate(45deg);
+}
+
+.carousel-arrow.prev::before {
+  transform: translate(-70%, -50%) rotate(-135deg);
+}
+
+/* ---- Dots ---- */
+.carousel-dots {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.carousel-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .3);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background .2s, width .2s;
+}
+
+.carousel-dot.active {
+  width: 24px;
+  border-radius: 3px;
+  background: var(--red);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 640px) {
+  .carousel {
+    max-height: 640px;
+  }
+
+  .carousel-content {
+    padding: 0 20px;
+    padding-top: 68px;
+  }
+
+  .carousel-arrow {
+    width: 36px;
+    height: 36px;
+  }
+
+  .carousel-arrow.prev { left: 12px; }
+  .carousel-arrow.next { right: 12px; }
+}

@@ -1,0 +1,22 @@
+# ─── Line endings ─────────────────────────────────────────────────────────────
+# Normaliza line endings para LF no repositório (compatível com Linux/VPS)
+* text=auto eol=lf
+
+# Binários — sem conversão
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.svg binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.tar binary
+*.pem binary
+*.p12 binary

@@ -1,0 +1,282 @@
+/* ============= VENDA / PDV PAGE ============= */
+
+/* ---- List page summary cards ---- */
+.venda-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.venda-stat-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.venda-stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(225, 20, 10, .1);
+  display: grid;
+  place-items: center;
+  color: var(--red);
+  flex-shrink: 0;
+}
+
+.venda-stat-label {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  color: var(--fg-mute);
+  margin-bottom: 4px;
+  letter-spacing: .01em;
+}
+
+.venda-stat-value {
+  font-family: 'Anton', sans-serif;
+  font-size: 32px;
+  letter-spacing: .02em;
+  color: var(--fg);
+  line-height: 1;
+}
+
+.venda-stat-brl { font-size: 20px; }
+
+/* ---- Detail modal ---- */
+.venda-detalhe-modal { width: 500px; max-width: 100%; }
+
+.venda-detalhe-itens {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.venda-detalhe-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.venda-detalhe-item-nome {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fg);
+}
+
+.venda-detalhe-item-sub {
+  font-size: 12px;
+  color: var(--fg-mute);
+  margin-top: 2px;
+}
+
+.venda-detalhe-item-total {
+  font-family: 'Anton', sans-serif;
+  font-size: 16px;
+  color: var(--ink);
+  letter-spacing: .02em;
+}
+
+.venda-detalhe-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}
+
+.venda-detalhe-total span {
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  color: var(--fg-mute);
+}
+
+.venda-detalhe-total b {
+  font-family: 'Anton', sans-serif;
+  font-size: 28px;
+  color: var(--fg);
+  letter-spacing: .02em;
+}
+
+/* ---- Cart items counter badge ---- */
+.venda-cart-count {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  letter-spacing: .01em;
+  color: var(--fg-mute);
+  background: var(--surface-3);
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+/* ---- Out of stock card state ---- */
+.pdv-card.out-of-stock {
+  opacity: .45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ---- Cart count badge overlaid on product card ---- */
+.pdv-card-in-cart {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--red);
+  color: #fff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--bg);
+}
+
+/* ---- Success toast ---- */
+.venda-sucesso {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 16px 0;
+  padding: 12px 16px;
+  background: rgba(34, 197, 94, .1);
+  border: 1px solid rgba(34, 197, 94, .25);
+  border-radius: 10px;
+  color: var(--green);
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .01em;
+  animation: toast-in .25s ease;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Cart empty state small text ---- */
+.cart-empty small {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--fg-soft);
+  font-family: 'Poppins', sans-serif;
+  letter-spacing: .01em;
+}
+
+/* ---- Cart qty disabled button ---- */
+.cart-qty button:disabled {
+  opacity: .3;
+  cursor: not-allowed;
+}
+
+/* ---- PDV cart CTA full width ---- */
+.cart-cta .btn-primary {
+  width: 100%;
+  justify-content: center;
+  padding: 18px;
+  font-size: 14px;
+  font-weight: 600;
+  gap: 10px;
+}
+
+.cart-cta .btn-primary:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
+/* ── Picker de quantidade ───────────────────────────────────────────────── */
+.qty-picker-ctrl {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.qty-picker-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 1px solid var(--line-2);
+  display: grid;
+  place-items: center;
+  color: var(--fg);
+  transition: background .15s, border-color .15s;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.qty-picker-btn:hover:not(:disabled) {
+  background: var(--surface-3);
+  border-color: var(--ink);
+}
+
+.qty-picker-btn:disabled {
+  opacity: .3;
+  cursor: not-allowed;
+}
+
+.qty-picker-input {
+  width: 80px;
+  text-align: center;
+  background: var(--surface-2);
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-family: 'Anton', sans-serif;
+  font-size: 28px;
+  letter-spacing: .02em;
+  color: var(--fg);
+  outline: none;
+  transition: border-color .15s;
+  /* remove spinner arrows */
+  -moz-appearance: textfield;
+}
+
+.qty-picker-input::-webkit-outer-spin-button,
+.qty-picker-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.qty-picker-input:focus {
+  border-color: var(--red);
+}
+
+.qty-picker-preview {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 18px;
+  margin-bottom: 12px;
+}
+
+.qty-picker-preview span {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  color: var(--fg-mute);
+}
+
+.qty-picker-preview b {
+  font-family: 'Anton', sans-serif;
+  font-size: 22px;
+  letter-spacing: .02em;
+  color: var(--ink);
+}

@@ -1,0 +1,20 @@
+# ─── Backend DEV — Hot Reload com dotnet watch ───────────────────────────────
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS dev
+
+WORKDIR /app
+
+# Copia apenas os arquivos de projeto primeiro (cache de restore)
+COPY backend/PepperImportsAPI.sln ./
+COPY backend/PepperImportsAPI/PepperImportsAPI.csproj ./PepperImportsAPI/
+
+RUN dotnet restore ./PepperImportsAPI/PepperImportsAPI.csproj
+
+# Copia o restante do código
+COPY backend/PepperImportsAPI/ ./PepperImportsAPI/
+
+WORKDIR /app/PepperImportsAPI
+
+EXPOSE 5139
+
+# Hot reload em desenvolvimento
+ENTRYPOINT ["dotnet", "watch", "run", "--urls", "http://0.0.0.0:5139", "--no-hot-reload-on-exit"]

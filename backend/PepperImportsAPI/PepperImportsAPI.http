@@ -1,0 +1,6 @@
+@PepperImportsAPI_HostAddress = http://localhost:5139
+
+GET {{PepperImportsAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

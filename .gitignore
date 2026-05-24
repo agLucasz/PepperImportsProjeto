@@ -1,0 +1,88 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+#  PepperImports Monorepo — .gitignore
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ── Segredos e Ambiente ────────────────────────────────────────────────────────
+.env
+.env.production
+.env.local
+.env.*.local
+*.secret
+secrets/
+
+# ── Node / Frontend ────────────────────────────────────────────────────────────
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ── .NET / Backend ─────────────────────────────────────────────────────────────
+backend/**/bin/
+backend/**/obj/
+backend/**/*.user
+backend/**/*.suo
+backend/**/*.userosscache
+backend/**/*.sln.docstates
+backend/**/*.userprefs
+backend/**/[Dd]ebug/
+backend/**/[Rr]elease/
+backend/**/TestResults/
+backend/**/*.ncrunch*
+*.DotSettings.user
+
+# ── Docker Data (volumes locais) ───────────────────────────────────────────────
+docker-data/
+D:/docker-data/
+
+# ── Logs ───────────────────────────────────────────────────────────────────────
+*.log
+logs/
+log/
+
+# ── Uploads/Mídias ────────────────────────────────────────────────────────────
+uploads/
+frontend/public/uploads/
+backend/**/wwwroot/uploads/
+
+# ── IDEs e Editores ────────────────────────────────────────────────────────────
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln.docstates
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ── Builds e Cache ─────────────────────────────────────────────────────────────
+dist/
+build/
+.cache/
+.parcel-cache/
+.turbo/
+
+# ── Docker imagens locais ──────────────────────────────────────────────────────
+*.tar
+*.tar.gz
+
+# ── Certificados ──────────────────────────────────────────────────────────────
+*.pem
+*.key
+*.crt
+*.p12
+certbot/
+
+# ── Misc ───────────────────────────────────────────────────────────────────────
+*.tmp
+*.bak
+*.orig
+*.backup

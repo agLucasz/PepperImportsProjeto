@@ -1,0 +1,113 @@
+/* ============= WHATSAPP FLOATING BUTTON ============= */
+
+.wa-float {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 9000;
+
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+
+  /* Verde WhatsApp */
+  background: #25d366;
+  box-shadow:
+    0 4px 20px rgba(37, 211, 102, .45),
+    0 2px 8px rgba(0, 0, 0, .25);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: transform .2s cubic-bezier(.34, 1.56, .64, 1), box-shadow .2s;
+}
+
+.wa-float:hover {
+  transform: scale(1.1);
+  box-shadow:
+    0 6px 28px rgba(37, 211, 102, .6),
+    0 3px 12px rgba(0, 0, 0, .3);
+}
+
+.wa-float:active {
+  transform: scale(.96);
+}
+
+/* ── Ícone WhatsApp — FontAwesome ─────────────────────────────────────── */
+.wa-float-icon {
+  font-size: 30px;
+  color: #fff;
+  line-height: 1;
+}
+
+/* ── Tooltip ───────────────────────────────────────────────────────────── */
+.wa-float-tooltip {
+  position: absolute;
+  right: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: #111;
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  white-space: nowrap;
+  padding: 6px 12px;
+  border-radius: 8px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .18s, transform .18s;
+  transform: translateY(-50%) translateX(6px);
+}
+
+.wa-float-tooltip::after {
+  content: '';
+  position: absolute;
+  right: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 5px solid transparent;
+  border-left-color: #111;
+  border-right-width: 0;
+}
+
+.wa-float:hover .wa-float-tooltip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* ── Pulse de entrada ──────────────────────────────────────────────────── */
+.wa-float {
+  animation: wa-pop-in .4s cubic-bezier(.34, 1.56, .64, 1) both;
+}
+
+@keyframes wa-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ── Pulse de atenção (a cada 5 s) ────────────────────────────────────── */
+.wa-float::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(37, 211, 102, .4);
+  animation: wa-pulse 3s ease-out 2s infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes wa-pulse {
+  0%   { transform: scale(1);   opacity: .6; }
+  70%  { transform: scale(1.7); opacity: 0;  }
+  100% { transform: scale(1.7); opacity: 0;  }
+}

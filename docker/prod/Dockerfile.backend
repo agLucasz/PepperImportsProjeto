@@ -1,0 +1,43 @@
+# ─── Backend PROD — Multi-stage build seguro ─────────────────────────────────
+
+# Stage 1: Build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copia arquivos de projeto (cache de restore)
+COPY backend/PepperImportsAPI.sln ./
+COPY backend/PepperImportsAPI/PepperImportsAPI.csproj ./PepperImportsAPI/
+
+RUN dotnet restore ./PepperImportsAPI/PepperImportsAPI.csproj
+
+# Copia código fonte
+COPY backend/PepperImportsAPI/ ./PepperImportsAPI/
+
+# Build release otimizado
+RUN dotnet publish ./PepperImportsAPI/PepperImportsAPI.csproj \
+    -c Release \
+    -o /app/publish \
+    --no-restore
+
+# Stage 2: Runtime mínimo (sem SDK)
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+WORKDIR /app
+
+# Usuário não-root para segurança
+RUN groupadd -r appgroup && useradd -r -g appgroup appuser
+
+# Copia apenas o publish
+COPY --from=build /app/publish ./
+
+# Diretório de uploads com permissão correta
+RUN mkdir -p /app/wwwroot/uploads && \
+    chown -R appuser:appgroup /app
+
+USER appuser
+
+EXPOSE 5139
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD curl -f http://localhost:5139/health || exit 1
+
+ENTRYPOINT ["dotnet", "PepperImportsAPI.dll"]

@@ -1,0 +1,180 @@
+/* ============= RETRÔ SECTION ============= */
+.retro {
+  width: 100%;
+  background:
+    linear-gradient(
+      120deg,
+      #7a0e07 0%,
+      #9b1108 35%,
+      #a81409 60%,
+      #8c1108 80%,
+      #6b0c06 100%
+    );
+  position: relative;
+  overflow: hidden;
+}
+
+/* Light vignette — soft glow centre-right */
+.retro::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 120% at 60% 50%, rgba(255,255,255,.06) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 80% at 0% 50%, rgba(0,0,0,.30) 0%, transparent 55%);
+  pointer-events: none;
+}
+
+/* Grain overlay */
+.retro::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  pointer-events: none;
+  opacity: .5;
+}
+
+/* ---- Inner — single column, centred ---- */
+.retro-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 100px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 22px;
+}
+
+/* Eyebrow pill */
+.retro-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(0, 0, 0, .28);
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .8);
+}
+
+/* Pulse dot */
+.retro-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+  flex-shrink: 0;
+  animation: retro-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes retro-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, .55); }
+  50%       { box-shadow: 0 0 0 5px rgba(255, 255, 255, 0); }
+}
+
+/* Title */
+.retro-title {
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(52px, 7vw, 96px);
+  font-weight: 400;
+  letter-spacing: .01em;
+  line-height: .92;
+  text-transform: uppercase;
+  color: #fff;
+  margin: 0;
+}
+
+/* "HISTÓRIA" — dark so it pops against the deep red */
+.retro-title-dark {
+  color: #1a0604;
+}
+
+/* Subtitle */
+.retro-sub {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, .65);
+  max-width: 480px;
+}
+
+/* CTA */
+.retro-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+  padding: 15px 28px;
+  background: #0a0a0a;
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background .15s, gap .15s, transform .1s;
+}
+
+.retro-cta:hover {
+  background: #1c1c1c;
+  gap: 18px;
+}
+
+.retro-cta:active {
+  transform: scale(.97);
+}
+
+/* Arrow — CSS only */
+.retro-cta-arrow {
+  display: inline-block;
+  width: 14px;
+  height: 10px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.retro-cta-arrow::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 12px;
+  height: 1.5px;
+  background: currentColor;
+  transform: translateY(-50%);
+  border-radius: 1px;
+}
+
+.retro-cta-arrow::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 7px;
+  height: 7px;
+  border-top: 1.5px solid currentColor;
+  border-right: 1.5px solid currentColor;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 640px) {
+  .retro-inner {
+    padding: 72px 24px;
+    gap: 18px;
+  }
+}

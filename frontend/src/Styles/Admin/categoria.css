@@ -1,0 +1,148 @@
+/* ============= CATEGORY PAGE ============= */
+
+/* Card color palette (rotates by index) */
+.cat-mark-0 { background: linear-gradient(135deg, #1a2e4a, #0f1a2e) }
+.cat-mark-1 { background: linear-gradient(135deg, #1f3d24, #0f2014) }
+.cat-mark-2 { background: linear-gradient(135deg, #3a1c14, #1a0a08) }
+.cat-mark-3 { background: linear-gradient(135deg, #2a1a3a, #140a1a) }
+.cat-mark-4 { background: linear-gradient(135deg, #3a3010, #1a1608) }
+.cat-mark-5 { background: linear-gradient(135deg, #1a1a3a, #0a0a1a) }
+
+/* Card action buttons */
+.cat-card-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.cat-card-btn {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--fg-mute);
+  cursor: pointer;
+  transition: all .15s;
+}
+
+.cat-card-btn:hover {
+  border-color: var(--ink);
+  color: var(--fg);
+}
+
+.cat-card-btn.danger:hover {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+/* Loading state */
+.cat-loading {
+  color: var(--fg-mute);
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  letter-spacing: .01em;
+}
+
+/* Danger button variant */
+.btn-danger {
+  border-color: var(--red) !important;
+  color: var(--red) !important;
+}
+
+.btn-danger:hover {
+  background: rgba(225, 20, 10, .08) !important;
+}
+
+/* ---- Modal ---- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .65);
+  backdrop-filter: blur(6px);
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  border-radius: 20px;
+  padding: 32px;
+  width: 440px;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.modal-head h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 22px;
+  letter-spacing: -.01em;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.modal-head .eyebrow {
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.modal-close {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--fg-mute);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all .15s;
+}
+
+.modal-close:hover {
+  border-color: var(--ink);
+  color: var(--fg);
+}
+
+.modal-error {
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  letter-spacing: .01em;
+  color: var(--red);
+  padding: 10px 14px;
+  background: rgba(225, 20, 10, .08);
+  border: 1px solid rgba(225, 20, 10, .2);
+  border-radius: 8px;
+  margin-top: -8px;
+}
+
+.modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-actions-right {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}

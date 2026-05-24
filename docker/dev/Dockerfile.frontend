@@ -1,0 +1,13 @@
+# ─── Frontend DEV — Vite com Hot Reload ──────────────────────────────────────
+FROM node:24-alpine AS dev
+
+WORKDIR /app
+
+# Instala dependências primeiro (cache do Docker)
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci
+
+# Código montado via volume em dev (não copia aqui)
+EXPOSE 5173
+
+ENTRYPOINT ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
