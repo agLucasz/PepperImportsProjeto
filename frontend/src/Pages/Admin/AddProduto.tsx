@@ -4,7 +4,7 @@ import { ArrowLeft, Upload, X, ChevronDown, Check } from 'lucide-react';
 import SideBar from '../../Components/Admin/SideBar';
 import RichTextEditor from '../../Components/Admin/RichTextEditor';
 import {
-  create, update, getById, uploadImagem, imageUrl,
+  create, update, getById, uploadImagem, uploadVideo, imageUrl, isVideo,
   TAMANHOS, type ProdutoCreateDTO, type ProdutoEstoqueItem,
 } from '../../Services/produtoService';
 import { getAll as getCategorias, type CategoriaDTO } from '../../Services/categoriaService';
@@ -33,7 +33,8 @@ const AddProduto: React.FC = () => {
   const navigate = useNavigate();
   const { produtoId } = useParams<{ produtoId?: string }>();
   const isEdit = !!produtoId;
-  const fileRef = useRef<HTMLInputElement>(null);
+  const fileRef  = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLInputElement>(null);
 
   /* form state */
   const [nomeProduto, setNomeProduto]   = useState('');
@@ -86,7 +87,7 @@ const AddProduto: React.FC = () => {
     }
   }, []);
 
-  /* ---- image upload ---- */
+  /* ---- upload handlers ---- */
   const handleFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
     setUploading(true);
@@ -94,7 +95,20 @@ const AddProduto: React.FC = () => {
     const uploaded: string[] = [];
     for (const file of Array.from(files)) {
       try { uploaded.push(await uploadImagem(file)); }
-      catch (e: unknown) { setError(e instanceof Error ? e.message : 'Erro no upload.'); }
+      catch (e: unknown) { setError(e instanceof Error ? e.message : 'Erro no upload da imagem.'); }
+    }
+    setImagemUrls(prev => [...prev, ...uploaded]);
+    setUploading(false);
+  };
+
+  const handleVideos = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    setError('');
+    const uploaded: string[] = [];
+    for (const file of Array.from(files)) {
+      try { uploaded.push(await uploadVideo(file)); }
+      catch (e: unknown) { setError(e instanceof Error ? e.message : 'Erro no upload do vídeo.'); }
     }
     setImagemUrls(prev => [...prev, ...uploaded]);
     setUploading(false);
@@ -225,11 +239,12 @@ const AddProduto: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Images */}
+                {/* Mídia — Imagens e Vídeos */}
                 <div className="form-section">
-                  <h3>Imagens</h3>
-                  <p className="hint">Arraste para reordenar · Primeira imagem é a capa</p>
+                  <h3>Mídia</h3>
+                  <p className="hint">Arraste para reordenar · Primeiro item é a capa</p>
 
+                  {/* Upload de imagens */}
                   <label
                     className="img-upload-area"
                     onDragOver={e => { e.preventDefault(); e.currentTarget.style.borderColor = 'var(--ink)'; }}
@@ -245,7 +260,27 @@ const AddProduto: React.FC = () => {
                     />
                     <Upload size={22} strokeWidth={1.8} color="var(--fg-mute)" />
                     <span className="img-upload-label">Clique ou arraste imagens aqui</span>
-                    <span className="img-upload-sub">JPG, PNG, WEBP · Máx. 5 MB por arquivo</span>
+                    <span className="img-upload-sub">JPG, PNG, WEBP · Máx. 5 MB</span>
+                  </label>
+
+                  {/* Upload de vídeos */}
+                  <label
+                    className="img-upload-area"
+                    style={{ marginTop: 10 }}
+                    onDragOver={e => { e.preventDefault(); e.currentTarget.style.borderColor = 'var(--ink)'; }}
+                    onDragLeave={e => { e.currentTarget.style.borderColor = ''; }}
+                    onDrop={e => { e.preventDefault(); e.currentTarget.style.borderColor = ''; handleVideos(e.dataTransfer.files); }}
+                  >
+                    <input
+                      ref={videoRef}
+                      type="file"
+                      accept=".mp4,.webm,.mov"
+                      multiple
+                      onChange={e => handleVideos(e.target.files)}
+                    />
+                    <Upload size={22} strokeWidth={1.8} color="var(--fg-mute)" />
+                    <span className="img-upload-label">Clique ou arraste vídeos aqui</span>
+                    <span className="img-upload-sub">MP4, WEBM, MOV · Máx. 100 MB</span>
                   </label>
 
                   {uploading && (
@@ -266,8 +301,14 @@ const AddProduto: React.FC = () => {
                           onDragOver={e => onDragOver(e, i)}
                           onDragEnd={onDragEnd}
                         >
-                          <img src={imageUrl(url)} alt={`Imagem ${i + 1}`} />
+                          {isVideo(url)
+                            ? <video src={imageUrl(url)} muted playsInline preload="metadata" />
+                            : <img src={imageUrl(url)} alt={`Mídia ${i + 1}`} />
+                          }
                           <span className="img-item-order">{i + 1}</span>
+                          {isVideo(url) && (
+                            <span className="media-type-badge">vídeo</span>
+                          )}
                           <button
                             type="button"
                             className="img-item-remove"

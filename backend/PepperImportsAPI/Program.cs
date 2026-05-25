@@ -5,9 +5,11 @@ using Microsoft.OpenApi.Models;
 using PepperImportsAPI.Application.Interfaces;
 using PepperImportsAPI.Application.Interfaces.Estoque;
 using PepperImportsAPI.Application.Interfaces.Imagem;
+using PepperImportsAPI.Application.Interfaces.Video;
 using PepperImportsAPI.Application.Services;
 using PepperImportsAPI.Application.Services.Auth;
 using PepperImportsAPI.Application.Services.Imagem;
+using PepperImportsAPI.Application.Services.Video;
 using PepperImportsAPI.Hubs;
 using PepperImportsAPI.Infraestructure.Data;
 using PepperImportsAPI.Infraestructure.Repositories;
@@ -90,6 +92,7 @@ builder.Services.AddScoped<IEntradaEstoqueRepository , EntradaEstoqueRepository>
 builder.Services.AddScoped<EntradaEstoqueService>();
 
 builder.Services.AddScoped<IImagemRepository, ImagemService>();
+builder.Services.AddScoped<IVideoRepository, VideoService>();
 
 builder.Services.AddScoped<IDespesaRepository, DespesaRepository>();
 builder.Services.AddScoped<DespesaService>();

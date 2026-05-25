@@ -7,6 +7,15 @@ export const IMG_BASE = _BASE;
 export const imageUrl = (path: string) =>
   path.startsWith('http') ? path : `${IMG_BASE}${path}`;
 
+/** Extensões de vídeo suportadas (deve espelhar o VideoService do backend) */
+const VIDEO_EXTS = ['.mp4', '.webm', '.mov'];
+
+/** Retorna true se a URL aponta para um vídeo */
+export const isVideo = (url: string): boolean => {
+  const lower = url.split('?')[0].toLowerCase();
+  return VIDEO_EXTS.some(ext => lower.endsWith(ext));
+};
+
 export const TAMANHOS = [
   { value: 1, label: 'PP' },
   { value: 2, label: 'M'  },
@@ -91,4 +100,19 @@ export async function uploadImagem(file: File): Promise<string> {
   if (!res.ok) throw new Error('Erro ao enviar imagem.');
   const data = await res.json() as { imagemUrl: string };
   return data.imagemUrl;
+}
+
+export async function uploadVideo(file: File): Promise<string> {
+  const form = new FormData();
+  form.append('file', file);
+  const res = await apiFetchForm(`${API_BASE}/video`, {
+    method: 'POST',
+    body: form,
+  });
+  if (!res.ok) {
+    const msg = await res.text().catch(() => '');
+    throw new Error(msg || 'Erro ao enviar vídeo.');
+  }
+  const data = await res.json() as { videoUrl: string };
+  return data.videoUrl;
 }
