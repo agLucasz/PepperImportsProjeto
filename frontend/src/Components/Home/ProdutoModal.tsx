@@ -1,12 +1,14 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { imageUrl, TAMANHOS, type ProdutoDTO } from '../../Services/produtoService';
+import { imageUrl, isVideo, TAMANHOS, type ProdutoDTO } from '../../Services/produtoService';
 import { waLink } from './WhatsAppFloat';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import '../../Styles/Home/produto-modal.css';
 import '../../Styles/Admin/rich-text-editor.css';
 
-const imgLabel = (i: number) => `FOTO ${i + 1}`;
+/** Label dinâmica: "VIDEO 1" ou "FOTO 1" */
+const mediaLabel = (url: string, i: number) =>
+  isVideo(url) ? `VIDEO ${i + 1}` : `FOTO ${i + 1}`;
 
 const fmtBRL = (v: number) =>
   v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -17,7 +19,7 @@ interface Props {
 }
 
 const ProdutoModal: React.FC<Props> = ({ produto, onClose }) => {
-  const [activeImg, setActiveImg] = useState(0);
+  const [activeIdx, setActiveIdx] = useState(0);
   const [tamanhoSel, setTamanhoSel] = useState<number | null>(null);
 
   /* Pré-seleciona o primeiro tamanho disponível */
@@ -42,12 +44,15 @@ const ProdutoModal: React.FC<Props> = ({ produto, onClose }) => {
     };
   }, [handleKey]);
 
-  /* Navegar entre imagens com setas */
-  const prevImg = () => setActiveImg(i => (i - 1 + produto.imagemUrls.length) % produto.imagemUrls.length);
-  const nextImg = () => setActiveImg(i => (i + 1) % produto.imagemUrls.length);
+  /* Navegar entre mídias com setas */
+  const total = produto.imagemUrls.length;
+  const prevMedia = () => setActiveIdx(i => (i - 1 + total) % total);
+  const nextMedia = () => setActiveIdx(i => (i + 1) % total);
 
-  const hasMultiple = produto.imagemUrls.length > 1;
-  const totalQty = produto.quantidadeTotal;
+  const hasMultiple   = total > 1;
+  const totalQty      = produto.quantidadeTotal;
+  const activeUrl     = produto.imagemUrls[activeIdx] ?? '';
+  const activeIsVideo = activeUrl ? isVideo(activeUrl) : false;
 
   /* Quantidade do tamanho selecionado */
   const qtdSelecionada = tamanhoSel !== null
@@ -78,15 +83,28 @@ const ProdutoModal: React.FC<Props> = ({ produto, onClose }) => {
             ))}
           </div>
 
-          {/* Imagem principal */}
+          {/* Mídia principal */}
           <div className="pm-main-img-wrap">
-            {produto.imagemUrls.length > 0 ? (
-              <img
-                key={activeImg}
-                src={imageUrl(produto.imagemUrls[activeImg])}
-                alt={produto.nomeProduto}
-                className="pm-main-img"
-              />
+            {total > 0 ? (
+              activeIsVideo ? (
+                <video
+                  key={activeIdx}
+                  src={imageUrl(activeUrl)}
+                  className="pm-main-video"
+                  controls
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                />
+              ) : (
+                <img
+                  key={activeIdx}
+                  src={imageUrl(activeUrl)}
+                  alt={produto.nomeProduto}
+                  className="pm-main-img"
+                />
+              )
             ) : (
               <div className="pm-img-empty" />
             )}
@@ -94,8 +112,8 @@ const ProdutoModal: React.FC<Props> = ({ produto, onClose }) => {
             {/* Setas */}
             {hasMultiple && (
               <>
-                <button className="pm-arrow pm-arrow--prev" onClick={prevImg} aria-label="Imagem anterior" />
-                <button className="pm-arrow pm-arrow--next" onClick={nextImg} aria-label="Próxima imagem" />
+                <button className="pm-arrow pm-arrow--prev" onClick={prevMedia} aria-label="Anterior" />
+                <button className="pm-arrow pm-arrow--next" onClick={nextMedia} aria-label="Próximo" />
               </>
             )}
 
@@ -105,38 +123,50 @@ const ProdutoModal: React.FC<Props> = ({ produto, onClose }) => {
                 {produto.imagemUrls.map((_, i) => (
                   <button
                     key={i}
-                    className={`pm-dot${i === activeImg ? ' active' : ''}`}
-                    onClick={() => setActiveImg(i)}
-                    aria-label={`Imagem ${i + 1}`}
+                    className={`pm-dot${i === activeIdx ? ' active' : ''}`}
+                    onClick={() => setActiveIdx(i)}
+                    aria-label={`Mídia ${i + 1}`}
                   />
                 ))}
               </div>
             )}
           </div>
 
-          {/* Label da imagem atual */}
-          {produto.imagemUrls.length > 0 && (
+          {/* Label da mídia atual */}
+          {total > 0 && (
             <p className="pm-img-label">
               {produto.categorias[0] && (
                 <>{produto.categorias[0]} &middot; </>
               )}
-              {imgLabel(activeImg)}
+              {mediaLabel(activeUrl, activeIdx)}
             </p>
           )}
 
           {/* Thumbnails */}
           {hasMultiple && (
             <div className="pm-thumbs">
-              {produto.imagemUrls.map((url, i) => (
-                <button
-                  key={i}
-                  className={`pm-thumb${i === activeImg ? ' active' : ''}`}
-                  onClick={() => setActiveImg(i)}
-                >
-                  <img src={imageUrl(url)} alt={imgLabel(i)} />
-                  <span>{imgLabel(i)}</span>
-                </button>
-              ))}
+              {produto.imagemUrls.map((url, i) => {
+                const thumbIsVideo = isVideo(url);
+                return (
+                  <button
+                    key={i}
+                    className={`pm-thumb${i === activeIdx ? ' active' : ''}`}
+                    onClick={() => setActiveIdx(i)}
+                  >
+                    {thumbIsVideo ? (
+                      <video
+                        src={imageUrl(url)}
+                        muted
+                        playsInline
+                        preload="metadata"
+                      />
+                    ) : (
+                      <img src={imageUrl(url)} alt={mediaLabel(url, i)} />
+                    )}
+                    <span>{mediaLabel(url, i)}</span>
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
@@ -181,7 +211,7 @@ const ProdutoModal: React.FC<Props> = ({ produto, onClose }) => {
             />
           )}
 
-          {/* Tamanhos — grid com disponibilidade por tamanho */}
+          {/* Tamanhos */}
           {produto.estoques.length > 0 && (
             <div className="pm-sizes">
               <p className="pm-sizes-label">
@@ -199,7 +229,6 @@ const ProdutoModal: React.FC<Props> = ({ produto, onClose }) => {
               <div className="pm-sizes-grid">
                 {TAMANHOS.map(t => {
                   const qty = estoqueMap[t.value] ?? 0;
-                  // Só renderiza tamanhos que existem no produto
                   if (!(t.value in estoqueMap)) return null;
                   const available = qty > 0;
                   const selected  = tamanhoSel === t.value;

@@ -33,7 +33,7 @@
   width: 100%;
   max-width: 1060px;
   /* altura fixa — galeria preenche, painel direito scrolla se necessário */
-  height: min(820px, 90vh);
+  height: min(920px, 92vh);
   background: var(--surface);
   border: 1px solid var(--line-2);
   border-radius: 24px;
@@ -146,9 +146,17 @@
 .pm-main-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center top;
+  object-fit: contain;
+  object-position: center;
   padding: 0;
+  animation: pm-img-appear .2s ease;
+}
+
+.pm-main-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
   animation: pm-img-appear .2s ease;
 }
 
@@ -310,11 +318,13 @@
   background: var(--red);
 }
 
-.pm-thumb img {
+.pm-thumb img,
+.pm-thumb video {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+  pointer-events: none;
 }
 
 .pm-thumb span {
@@ -438,6 +448,17 @@
   line-height: 1.55;
   color: var(--fg-mute);
   margin-bottom: 16px;
+}
+
+.pm-desc ul,
+.pm-desc ol {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.pm-desc li {
+  padding-left: 0;
 }
 
 /* Size selector */
